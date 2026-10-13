@@ -1,0 +1,28 @@
+/*
+ * Tokens derivados do Guia de Marca Quorum Lab.
+ * Paleta obrigatória: #0B0B0B (preto profundo) e #CDAA63 (dourado Quorum).
+ * Demais tons são apenas transparências dessas cores ou o off-white de texto
+ * previsto no guia. Nenhuma outra cor deve ser introduzida.
+ */
+:root {
+  --black: #0b0b0b;
+  --gold: #cdaa63;
+  --ink: #ece9e2; /* off-white de texto */
+
+  --ink-2: rgba(236, 233, 226, 0.66);
+  --ink-3: rgba(236, 233, 226, 0.42);
+  --line: rgba(236, 233, 226, 0.14);
+  --line-strong: rgba(236, 233, 226, 0.28);
+  --gold-line: rgba(205, 170, 99, 0.38);
+  --gold-soft: rgba(205, 170, 99, 0.08);
+
+  --font-title: "Garamond Premier Pro", "Cormorant Garamond", Garamond, "Times New Roman", serif;
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --track-title: 0.18em;
+  --track-micro: 0.16em;
+
+  --page-max: 760px;
+  --gutter: clamp(20px, 5vw, 48px);
+  --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+}
