@@ -4,7 +4,7 @@ import { DOC_SLOTS, SERVICES } from "../../src/shared/config";
 import { HEADER_BYTES, matchesSignature } from "../../src/shared/files";
 import { estimate } from "../../src/shared/pricing";
 import { normalizeSolicitacao, solicitacaoSchema } from "../../src/shared/schema";
-import { attachmentMaxBytes, mailEnv, retentionDays } from "./_lib/env";
+import { attachmentMaxBytes, linkExpirySeconds, mailEnv } from "./_lib/env";
 import { HttpError, assertSameOrigin, handleError, json, readJson } from "./_lib/http";
 import { sendConfirmationEmail, sendQuorumEmail, type FileDelivery } from "./_lib/email";
 import { buildPdf } from "./_lib/pdf";
@@ -69,7 +69,7 @@ export default async (req: Request, _context: Context) => {
     const pdfPreview = await buildPdf({ code: ticket.code, createdAt, solicitacao, estimate: est, files: [], thumbnail });
     const budget = attachmentMaxBytes() - pdfPreview.length;
     let used = 0;
-    const expires = retentionDays() * 24 * 60 * 60;
+    const expires = linkExpirySeconds();
     const deliveries: FileDelivery[] = [];
     for (const f of [...ticket.files].sort((a, b) => DOC_SLOTS[a.slot].prioridadeAnexo - DOC_SLOTS[b.slot].prioridadeAnexo)) {
       const attach = used + f.size <= budget;

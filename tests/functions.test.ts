@@ -117,6 +117,17 @@ describe("Functions", () => {
     expect(confirm.attachments).toBeUndefined();
   });
 
+  it("aceita validade curta de link para teste de expiração", async () => {
+    process.env.FILE_RETENTION_DAYS = "0.01";
+    const r = await uploadAndSubmit(
+      { foto: JPG, stl_superior: stl(100), tomografia: zip(3 * 1024 * 1024) },
+      { foto: "f.jpg", stl_superior: "s.stl", tomografia: "t.zip" },
+    );
+    delete process.env.FILE_RETENTION_DAYS;
+    expect(r.status).toBe(200);
+    expect(emails[0].text).toMatch(/X-Amz-Expires=864(&|$|\s)/);
+  });
+
   it("rejeita arquivo cujo conteúdo não corresponde à extensão", async () => {
     const r = await uploadAndSubmit(
       { foto: zip(500), stl_superior: stl(10), tomografia: zip(500) },

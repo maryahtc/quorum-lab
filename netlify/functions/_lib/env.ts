@@ -49,8 +49,11 @@ export const signingSecret = () => {
 /** Limite do conjunto de anexos do e-mail, em bytes (antes do base64). */
 export const attachmentMaxBytes = () => number("ATTACHMENT_MAX_MB", 15) * 1024 * 1024;
 
-/** Validade dos links de download. Limitada a 7 dias (máximo de URL assinada no S3/R2). */
-export const retentionDays = () => Math.min(number("FILE_RETENTION_DAYS", 7), 7);
+/**
+ * Validade dos links de download, em segundos. Limitada a 7 dias (máximo de URL
+ * assinada no S3/R2). Aceita frações para teste: FILE_RETENTION_DAYS=0.01 ≈ 14 min.
+ */
+export const linkExpirySeconds = () => Math.max(60, Math.round(Math.min(number("FILE_RETENTION_DAYS", 7), 7) * 24 * 60 * 60));
 
 /** Turnstile é opcional em desenvolvimento; em produção configure TURNSTILE_SECRET_KEY. */
 export const turnstileSecret = () => process.env.TURNSTILE_SECRET_KEY?.trim() || undefined;
