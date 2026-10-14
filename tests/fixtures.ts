@@ -4,7 +4,7 @@ export const solicitacaoExemplo: Solicitacao = {
   clinica: {
     razaoSocial: "Clínica Odontológica Exemplo Ltda.",
     nomeFantasia: "Clínica Exemplo",
-    cnpj: "11.222.333/0001-81",
+    documento: "11.222.333/0001-81",
     inscricaoMunicipal: "",
     solicitante: "Dra. Ana Exemplo",
     cro: "CRO-SP 12345",

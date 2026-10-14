@@ -1,7 +1,15 @@
 import { onlyDigits } from "../../shared/validators";
 
-export const maskCnpj = (v: string) => {
+const maskCpf = (d: string) =>
+  d
+    .replace(/^(\d{3})(\d)/, "$1.$2")
+    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1-$2");
+
+/** Máscara automática: até 11 dígitos formata como CPF; acima, como CNPJ. */
+export const maskCpfCnpj = (v: string) => {
   const d = onlyDigits(v).slice(0, 14);
+  if (d.length <= 11) return maskCpf(d);
   return d
     .replace(/^(\d{2})(\d)/, "$1.$2")
     .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")

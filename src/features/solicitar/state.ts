@@ -38,7 +38,7 @@ export interface FormState {
 
 export const initialState = (): FormState => ({
   clinica: {
-    razaoSocial: "", nomeFantasia: "", cnpj: "", inscricaoMunicipal: "", solicitante: "", cro: "",
+    razaoSocial: "", nomeFantasia: "", documento: "", inscricaoMunicipal: "", solicitante: "", cro: "",
     telefone: "", whatsapp: "", email: "", emailNotaFiscal: "", instagram: "",
     cep: "", rua: "", numero: "", complemento: "", bairro: "", cidade: "", estado: "",
   },

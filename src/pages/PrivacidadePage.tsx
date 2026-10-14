@@ -12,7 +12,7 @@ export default function PrivacidadePage() {
 
       <H n={2}>Dados coletados</H>
       <ul>
-        <li><strong>Da clínica e do profissional:</strong> razão social, nome fantasia, CNPJ, inscrição municipal, nome e CRO do solicitante, telefones, e-mails, Instagram e endereço.</li>
+        <li><strong>Da clínica e do profissional:</strong> razão social ou nome completo, nome fantasia, CPF ou CNPJ, inscrição municipal, nome e CRO do solicitante, telefones, e-mails, Instagram e endereço.</li>
         <li><strong>Do paciente:</strong> apenas identificação por iniciais ou código interno, idade (opcional), observações e informações clínicas do caso.</li>
         <li><strong>Documentação clínica:</strong> fotografia do sorriso, arquivos STL e tomografia (DICOM), conforme o serviço.</li>
         <li><strong>Dados técnicos:</strong> endereço IP, usado exclusivamente para segurança, prevenção de spam e limite de requisições.</li>

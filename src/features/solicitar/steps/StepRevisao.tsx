@@ -4,6 +4,7 @@ import { AVISO_ENVIO, DOC_SLOTS, DOC_SLOT_ORDER, SERVICES } from "../../../share
 import { LABELS, elementos, enderecoCompleto, formatTeeth } from "../../../shared/format";
 import { brl, estimate } from "../../../shared/pricing";
 import type { Solicitacao } from "../../../shared/schema";
+import { documentoTipo } from "../../../shared/validators";
 import type { StepProps } from "./types";
 
 function Row({ label, children, teeth }: { label: string; children: ReactNode; teeth?: boolean }) {
@@ -46,8 +47,8 @@ export function StepRevisao({ state, errors, goTo, onConsent, footer }: StepProp
 
         <Sec title="Clínica" onEdit={() => goTo(0)}>
           <Row label="Clínica">{c.nomeFantasia}</Row>
-          <Row label="Razão social">{c.razaoSocial}</Row>
-          <Row label="CNPJ">{c.cnpj}</Row>
+          <Row label="Razão social / nome">{c.razaoSocial}</Row>
+          <Row label={documentoTipo(c.documento)}>{c.documento}</Row>
           <Row label="Solicitante">{[c.solicitante, c.cro].filter(Boolean).join(" · ")}</Row>
           <Row label="Contato">{[c.whatsapp && `WhatsApp ${c.whatsapp}`, c.telefone && `Tel. ${c.telefone}`, c.email].filter(Boolean).join("\n")}</Row>
           <Row label="Endereço">{enderecoCompleto(c as Solicitacao["clinica"])}</Row>

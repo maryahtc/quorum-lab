@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { SelectField, TextField } from "../../../components/fields";
 import { UFS } from "../../../shared/schema";
 import { onlyDigits } from "../../../shared/validators";
-import { lookupCep, maskCep, maskCnpj, maskPhone } from "../masks";
+import { lookupCep, maskCep, maskCpfCnpj, maskPhone } from "../masks";
 import type { StepProps } from "./types";
 
 export function StepClinica({ state, patch, errors }: StepProps) {
@@ -36,9 +36,9 @@ export function StepClinica({ state, patch, errors }: StepProps) {
   return (
     <>
       <div className="grid">
-        <TextField className="col-6" label="Razão social" required value={c.razaoSocial} onValue={set("razaoSocial")} error={err("razaoSocial")} autoComplete="organization" />
-        <TextField className="col-3" label="Nome fantasia" required value={c.nomeFantasia} onValue={set("nomeFantasia")} error={err("nomeFantasia")} />
-        <TextField className="col-3" label="CNPJ" required value={c.cnpj} onValue={(v) => patch("clinica", { cnpj: maskCnpj(v) })} error={err("cnpj")} inputMode="numeric" placeholder="00.000.000/0000-00" />
+        <TextField className="col-6" label="Razão social ou nome completo" required value={c.razaoSocial} onValue={set("razaoSocial")} error={err("razaoSocial")} autoComplete="organization" />
+        <TextField className="col-3" label="Nome fantasia ou consultório" required value={c.nomeFantasia} onValue={set("nomeFantasia")} error={err("nomeFantasia")} />
+        <TextField className="col-3" label="CPF ou CNPJ" required value={c.documento} onValue={(v) => patch("clinica", { documento: maskCpfCnpj(v) })} error={err("documento")} inputMode="numeric" placeholder="CPF ou CNPJ" />
         <TextField className="col-3" label="Inscrição municipal" value={c.inscricaoMunicipal} onValue={set("inscricaoMunicipal")} />
         <TextField className="col-3" label="Instagram" value={c.instagram} onValue={set("instagram")} placeholder="@" />
       </div>

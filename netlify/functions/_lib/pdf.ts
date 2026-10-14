@@ -4,6 +4,7 @@ import { DOC_SLOTS, DOC_SLOT_ORDER, LOWER_TEETH, SERVICES, UPPER_TEETH } from ".
 import { LABELS, elementos, enderecoCompleto, formatBytes, formatTeeth } from "../../../src/shared/format";
 import { brl, type Estimate } from "../../../src/shared/pricing";
 import type { Solicitacao } from "../../../src/shared/schema";
+import { documentoTipo } from "../../../src/shared/validators";
 import { CORMORANT_LIGHT, INTER_LIGHT, INTER_MEDIUM, INTER_REGULAR } from "./assets/fonts";
 import { Q_SYMBOL_PNG_B64 } from "./assets/qSymbol";
 import type { FileDelivery } from "./email";
@@ -266,9 +267,9 @@ function drawBody(w: Writer, input: PdfInput, thumb?: PDFImage) {
   const c = s.clinica;
 
   section(w, 1, "Dados da clínica");
-  field(w, "Razão social", c.razaoSocial);
+  field(w, "Razão social / nome", c.razaoSocial);
   field(w, "Nome fantasia", c.nomeFantasia);
-  field(w, "CNPJ", c.cnpj);
+  field(w, documentoTipo(c.documento), c.documento);
   if (c.inscricaoMunicipal) field(w, "Inscrição municipal", c.inscricaoMunicipal);
   field(w, "Responsável", c.solicitante);
   field(w, "CRO", c.cro);

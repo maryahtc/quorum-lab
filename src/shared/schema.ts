@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { SERVICES, VALID_TEETH, type ServiceId } from "./config";
-import { isValidCnpj, onlyDigits } from "./validators";
+import { isValidCpfOuCnpj, onlyDigits } from "./validators";
 
 const req = (msg = "Campo obrigatório") => z.string().trim().min(1, msg);
 const opt = z.string().trim().max(300).optional().default("");
@@ -24,7 +24,8 @@ const phone = (required: boolean) =>
 export const clinicaSchema = z.object({
   razaoSocial: req().max(200),
   nomeFantasia: req().max(200),
-  cnpj: req().refine(isValidCnpj, "CNPJ inválido"),
+  /** CPF (profissional autônomo) ou CNPJ (clínica). */
+  documento: req().refine(isValidCpfOuCnpj, "CPF ou CNPJ inválido"),
   inscricaoMunicipal: opt,
   solicitante: req().max(200),
   cro: opt,

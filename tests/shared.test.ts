@@ -3,7 +3,8 @@ import { matchesSignature, sanitizeFileName, validateFileMeta } from "../src/sha
 import { formatTeeth } from "../src/shared/format";
 import { estimate } from "../src/shared/pricing";
 import { normalizeSolicitacao, solicitacaoSchema } from "../src/shared/schema";
-import { isValidCnpj } from "../src/shared/validators";
+import { isValidCnpj, isValidCpf, isValidCpfOuCnpj } from "../src/shared/validators";
+import { maskCpfCnpj } from "../src/features/solicitar/masks";
 import { solicitacaoExemplo } from "./fixtures";
 
 describe("valores", () => {
@@ -28,6 +29,19 @@ describe("validações", () => {
     expect(isValidCnpj("11.222.333/0001-81")).toBe(true);
     expect(isValidCnpj("11.222.333/0001-82")).toBe(false);
     expect(isValidCnpj("00.000.000/0000-00")).toBe(false);
+  });
+  it("CPF e CPF ou CNPJ", () => {
+    expect(isValidCpf("529.982.247-25")).toBe(true);
+    expect(isValidCpf("529.982.247-26")).toBe(false);
+    expect(isValidCpf("111.111.111-11")).toBe(false);
+    expect(isValidCpfOuCnpj("529.982.247-25")).toBe(true);
+    expect(isValidCpfOuCnpj("11.222.333/0001-81")).toBe(true);
+    expect(isValidCpfOuCnpj("1234567")).toBe(false);
+  });
+  it("máscara automática CPF/CNPJ", () => {
+    expect(maskCpfCnpj("52998224725")).toBe("529.982.247-25");
+    expect(maskCpfCnpj("11222333000181")).toBe("11.222.333/0001-81");
+    expect(maskCpfCnpj("5299")).toBe("529.9");
   });
   it("aceita a solicitação exemplo", () => {
     expect(solicitacaoSchema.safeParse(solicitacaoExemplo).success).toBe(true);
