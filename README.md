@@ -11,6 +11,7 @@ Ela faz quatro coisas: recebe o formulário, coleta a documentação, gera um PD
 | `/termos` | Termos de Prestação de Serviço (**rascunho**) |
 | `/privacidade` | Política de Privacidade (**rascunho**) |
 | `/` | Redireciona para `/solicitar` (temporário, veja *Site institucional*) |
+| `/interno/entrega` | Ferramenta interna: PDF técnico de entrega do planejamento (veja abaixo) |
 
 ---
 
@@ -165,6 +166,19 @@ A interface e o PDF seguem o **Guia de Marca Quorum Lab** (`brand/original/Guia_
 
 O formulário não precisa de nenhuma alteração.
 
+## Ferramenta interna · Entrega do planejamento (`/interno/entrega`)
+
+Usada pela equipe depois que o planejamento está pronto. O fluxo é: print, frase, decisão, orientação e **gerar e baixar o PDF**.
+
+- **Uma página só**, com 7 seções numeradas: identificação, leitura do caso, planejamento (análises com print), decisões, orientações, arquivos da entrega e resumo.
+- **Prints:** colar com **Cmd/Ctrl + V** em qualquer ponto da página, arrastar e soltar, ou clicar para selecionar (JPG, PNG ou WEBP). Cada imagem colada vira uma análise. Com o foco na imagem de uma análise, colar substitui essa imagem.
+- **Tudo no navegador:** o PDF é gerado localmente (`pdf-lib`, as mesmas fontes e o mesmo símbolo Q do PDF da solicitação) e baixado como `QUORUM_[CODIGO]_[PACIENTE].pdf`.
+- **Não envia nada:** sem e-mail, WhatsApp, banco de dados, armazenamento, histórico ou API. O planejador anexa manualmente o PDF, os STL, os guias e os demais arquivos no e-mail ou no WhatsApp.
+- Nada é salvo. Se houver conteúdo preenchido, o navegador avisa antes de fechar a aba.
+- **Sem login por enquanto.** A área `/interno` tem moldura e rota próprias e um único ponto de proteção, `src/features/interno/InternoGate.tsx`, onde a autenticação entra no futuro. Em produção, ela recebe `X-Robots-Tag: noindex`.
+
+Código: `src/features/interno/entrega/`. Os arquivos são `model.ts` (estado e regras), `pdf.ts` (layout do PDF), `images.ts` (preparo das imagens: orientação, WEBP, redução proporcional de imagens muito grandes) e os componentes da página.
+
 ## Desenvolvimento
 
 ```bash
@@ -181,6 +195,7 @@ Estrutura:
 ```
 src/shared/          regras compartilhadas (config, schema zod, preços, arquivos)
 src/features/solicitar/   formulário em 7 etapas
+src/features/interno/     ferramentas internas (entrega do planejamento)
 src/pages/           termos, privacidade, 404
 netlify/functions/   upload-urls.ts, submit.ts e _lib/ (pdf, e-mail, storage, token, turnstile)
 brand/original/      arquivos oficiais da marca (não editar)

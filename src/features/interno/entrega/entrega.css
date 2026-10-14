@@ -1,0 +1,173 @@
+/*
+ * Entrega do planejamento — uma página vertical, seções numeradas,
+ * filetes finos e dourado mínimo. Sem cards, sem cores extras.
+ */
+
+.entrega { position: relative; }
+.entrega-intro { padding: 72px 0 24px; }
+.entrega-intro .display { margin-top: 16px; }
+.entrega-intro .lead { margin-top: 20px; }
+
+kbd {
+  font-family: var(--font-ui); font-size: 0.86em; letter-spacing: 0.06em; color: var(--ink);
+  border: 1px solid var(--line-strong); padding: 1px 7px; white-space: nowrap;
+}
+
+/* Índice lateral: apenas em telas largas */
+.entrega-index { display: none; }
+@media (min-width: 1280px) {
+  .entrega-index { display: block; position: fixed; top: 180px; left: max(24px, calc(50% - 440px - 220px)); width: 180px; }
+  .entrega-index ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--line); }
+  .entrega-index a {
+    display: block; padding: 7px 0 7px 16px; text-decoration: none; color: var(--ink-3);
+    font-size: 10px; letter-spacing: var(--track-micro); text-transform: uppercase; font-weight: 300;
+    transition: color 0.2s var(--ease);
+  }
+  .entrega-index a span { color: var(--gold); margin-right: 10px; }
+  .entrega-index a:hover { color: var(--ink); }
+}
+
+/* Seções */
+.secao { padding-top: 88px; scroll-margin-top: 24px; }
+.secao .step-head { margin-bottom: 36px; gap: 14px; }
+.secao .step-head .slash { color: var(--ink-3); font-weight: 300; font-size: 12px; }
+.secao .step-intro { margin: -14px 0 36px; font-size: 14px; }
+
+/* Textareas curtas (2 a 4 linhas) */
+.field.short textarea { min-height: 0; field-sizing: content; min-height: calc(3 * 1.6em + 28px); max-height: 320px; }
+.counter[data-over] { color: var(--ink-2); }
+
+/* Escolhas por clique */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  background: none; border: 1px solid var(--line); color: var(--ink-2); cursor: pointer;
+  padding: 7px 13px; font-size: 12.5px; font-weight: 300; letter-spacing: 0.02em; line-height: 1.4; text-align: left;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+.chip:hover { border-color: var(--line-strong); color: var(--ink); }
+.chip[aria-pressed="true"], .chip[aria-checked="true"] { border-color: var(--gold); color: var(--gold); }
+.chips-servico .chip { padding: 11px 16px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; }
+.chips-frases { flex-direction: column; align-items: flex-start; gap: 6px; }
+.chips-frases .chip { font-size: 13.5px; padding: 8px 14px; }
+.chips-frases .chip::before { content: "+"; color: var(--gold); margin-right: 10px; }
+.chips-frases .chip[aria-pressed="true"]::before { content: "✓"; }
+
+/* Botões discretos de adicionar */
+.add-btn {
+  display: inline-flex; align-items: center; gap: 12px; margin-top: 28px; cursor: pointer;
+  background: none; border: 0; border-bottom: 1px solid var(--gold-line); padding: 8px 2px;
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 400; color: var(--ink);
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.add-btn span { color: var(--gold); font-size: 15px; letter-spacing: 0; font-weight: 300; }
+.add-btn:hover { color: var(--gold); border-color: var(--gold); }
+.empty-note { margin: 14px 0 0; font-size: 12.5px; color: var(--ink-3); font-weight: 300; }
+
+.icon-btn {
+  background: none; border: 1px solid transparent; color: var(--ink-2); cursor: pointer;
+  width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 300; line-height: 1; transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.icon-btn:hover:not(:disabled) { color: var(--gold); border-color: var(--gold-line); }
+.icon-btn:disabled { opacity: 0.25; cursor: default; }
+
+/* 03 · Análises */
+.analises { display: grid; gap: 64px; }
+.analise { min-width: 0; }
+.analise-head { display: flex; align-items: baseline; gap: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.analise-num { font-size: 11px; letter-spacing: 0.14em; color: var(--gold); }
+.analise-titulo {
+  flex: 1; min-width: 0; font-family: var(--font-title); font-weight: 300; text-transform: uppercase;
+  letter-spacing: 0.14em; font-size: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.analise-tools { display: flex; align-items: center; gap: 4px; }
+.analise-tools .text-btn { margin-left: 12px; }
+
+.drop {
+  margin-top: 18px; border: 1px dashed var(--line-strong); min-height: 220px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; text-align: center; padding: 28px;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.drop:hover, .drop:focus-visible { border-color: var(--gold-line); outline: none; }
+.drop:focus-visible { border-style: solid; border-color: var(--gold); }
+.drop[data-drag] { border-color: var(--gold); background: var(--gold-soft); }
+.drop[data-filled] { border: 1px solid var(--line); padding: 0; min-height: 0; cursor: default; background: #000; }
+.drop[data-filled]:focus-visible { border-color: var(--gold); }
+.drop img { width: auto; height: auto; max-width: 100%; max-height: 560px; object-fit: contain; }
+.drop-msg { display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--ink-2); font-weight: 300; font-size: 14px; }
+.drop-msg b { font-family: var(--font-title); font-weight: 300; font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
+.drop-alt { font-size: 12.5px; color: var(--ink-3); }
+.drop-fmt { font-size: 9.5px; letter-spacing: 0.2em; color: var(--ink-3); }
+.img-tools { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; font-weight: 300; }
+.img-tools .text-btn + .text-btn { margin-left: 22px; }
+.analise .error { margin: 10px 0 0; }
+.analise-fields { display: grid; gap: 18px; margin-top: 30px; }
+.analise-fields .chips { margin-top: -4px; }
+.analise-fields .field.short { margin-top: 12px; }
+.analise-fields .field.short textarea { min-height: calc(2 * 1.6em + 28px); }
+
+.entrega[data-drag-page] .add-btn { color: var(--gold); border-color: var(--gold); }
+
+/* 04 · Decisões */
+.decisoes { margin-top: -18px; }
+.decisao {
+  display: grid; grid-template-columns: 28px auto 150px 1fr 30px; align-items: center; gap: 18px;
+  padding: 14px 0; border-bottom: 1px solid var(--line);
+}
+.d-num { font-size: 11px; letter-spacing: 0.14em; color: var(--ink-3); }
+.d-tipos { display: flex; align-items: center; gap: 2px; position: relative; padding-bottom: 14px; }
+.d-tipos button {
+  width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  background: none; border: 1px solid transparent; color: var(--ink-3); transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.d-tipos button:hover { color: var(--ink); }
+.d-tipos button[aria-checked="true"] { color: var(--gold); border-color: var(--gold); }
+.d-tipo-label { position: absolute; left: 0; bottom: -2px; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+.d-field { display: block; min-width: 0; }
+.d-field input {
+  width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--line-strong); border-radius: 0;
+  color: var(--ink); font: inherit; font-size: 15px; padding: 6px 0 8px; -webkit-appearance: none; appearance: none;
+}
+.d-elemento { font-weight: 500 !important; letter-spacing: 0.04em; font-variant-numeric: tabular-nums lining-nums; }
+.d-field input::placeholder { color: var(--ink-3); font-weight: 300; }
+.d-field input:focus { outline: none; border-color: var(--gold); }
+@media (max-width: 680px) {
+  .decisao { grid-template-columns: 1fr 1fr 30px; grid-template-areas: "tipos tipos rm" "el el el" "desc desc desc"; gap: 10px 14px; padding: 18px 0; }
+  .d-num { display: none; }
+  .d-tipos { grid-area: tipos; }
+  .d-remover { grid-area: rm; justify-self: end; }
+  .d-field { grid-area: el; }
+  .d-field-desc { grid-area: desc; }
+}
+
+/* 05 · Orientações */
+.orientacoes { list-style: none; margin: 32px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.orientacoes li { display: grid; grid-template-columns: 32px 1fr 30px; gap: 12px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.o-num { font-size: 11px; letter-spacing: 0.14em; color: var(--gold); padding-top: 8px; }
+.o-field textarea {
+  width: 100%; background: transparent; border: 0; color: var(--ink); font: inherit; font-size: 15px; line-height: 1.55;
+  padding: 4px 0; resize: none; field-sizing: content; min-height: 1.55em;
+}
+.o-field textarea:focus { outline: none; }
+.o-field textarea::placeholder { color: var(--ink-3); font-weight: 300; }
+.orientacoes li:focus-within { border-bottom-color: var(--gold-line); }
+
+/* 06 · Arquivos */
+.checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 32px; border-top: 1px solid var(--line); }
+.consent.check { margin: 0; padding: 14px 0; border-bottom: 1px solid var(--line); align-items: center; color: var(--ink); font-size: 14.5px; }
+.consent.check input { margin: 0; }
+@media (max-width: 560px) { .checks { grid-template-columns: 1fr; } }
+
+/* 07 · Resumo e ações */
+.resumo { margin: -12px 0 0; }
+.resumo .nome { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; overflow-wrap: anywhere; }
+.acoes { display: flex; justify-content: flex-end; gap: 16px; flex-wrap: wrap; margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--line); }
+@media (max-width: 560px) { .acoes { flex-direction: column-reverse; } .acoes .btn { width: 100%; } }
+.form-alert a { color: var(--gold); }
+.baixado { margin-top: 40px; padding: 26px 0 0; border-top: 1px solid var(--gold-line); text-align: right; }
+.baixado p { margin: 0 0 6px; font-size: 14px; font-weight: 300; overflow-wrap: anywhere; }
+.baixado .btn-outline { margin-top: 22px; }
+@media (max-width: 560px) { .baixado { text-align: left; } .baixado .btn-outline { width: 100%; } }
+
+/* Campos de data no tema escuro */
+.entrega input[type="date"] { color-scheme: dark; min-height: 41px; }
