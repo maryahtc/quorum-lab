@@ -3,6 +3,7 @@ import { TextArea, TextField } from "../../../components/fields";
 import { AnaliseBlock } from "./AnaliseBlock";
 import { DecisaoSimbolo } from "./DecisaoSimbolo";
 import { ImagemInvalida, imagensDe, liberar, prepararImagem } from "./images";
+import { baixar, iniciarPreview, liberarPdfs } from "./saida";
 import {
   ARQUIVOS, DECISAO_TIPOS, LEITURA_IDEAL, SERVICOS, SUGESTOES_ORIENTACAO,
   analisesValidas, arquivosTexto, dataTexto, decisaoTipo, decisoesValidas, entregaVazia, nomeArquivo,
@@ -36,7 +37,6 @@ export default function EntregaPage() {
   const [baixado, setBaixado] = useState<string | null>(null);
   const [previewLink, setPreviewLink] = useState<string | null>(null);
   const [dragPagina, setDragPagina] = useState(false);
-  const pdfUrls = useRef<string[]>([]);
 
   const estado = useRef(e);
   estado.current = e;
@@ -163,32 +163,22 @@ export default function EntregaPage() {
 
   async function gerar(modo: "preview" | "download") {
     if (gerando) return;
-    // A aba da pré-visualização precisa abrir já no clique (bloqueio de pop-up).
-    const win = modo === "preview" ? window.open("", "_blank") : null;
-    if (win) win.document.title = "Gerando PDF…";
+    const preview = modo === "preview" ? iniciarPreview() : null;
     setGerando(modo);
     setFalha(null);
     setPreviewLink(null);
     try {
       const { buildEntregaPdf } = await import("./pdf");
       const bytes = await buildEntregaPdf(estado.current);
-      const url = URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>], { type: "application/pdf" }));
-      pdfUrls.current.push(url);
-      if (modo === "preview") {
-        if (win) win.location.href = url;
-        else setPreviewLink(url);
+      if (preview) {
+        const link = await preview.mostrar(bytes);
+        if (link) setPreviewLink(link);
       } else {
         const nome = nomeArquivo(estado.current);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = nome;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setBaixado(nome);
+        if (await baixar(nome, bytes)) setBaixado(nome);
       }
     } catch (err) {
-      win?.close();
+      preview?.cancelar();
       console.error("Falha ao gerar o PDF", err instanceof Error ? err.message : err);
       setFalha("Não foi possível gerar o PDF. Verifique as imagens e tente novamente.");
     } finally {
@@ -198,8 +188,7 @@ export default function EntregaPage() {
 
   function limpar() {
     estado.current.analises.forEach((a) => liberar(a.imagem));
-    pdfUrls.current.forEach((u) => URL.revokeObjectURL(u));
-    pdfUrls.current = [];
+    liberarPdfs();
     dispatch({ t: "limpar" });
     setErros({});
     setBaixado(null);
@@ -209,7 +198,7 @@ export default function EntregaPage() {
     focar('[data-campo="codigo"]');
   }
 
-  useEffect(() => () => pdfUrls.current.forEach((u) => URL.revokeObjectURL(u)), []);
+  useEffect(() => () => liberarPdfs(), []);
 
   /* ------------------------------ render ------------------------------ */
 
