@@ -38,6 +38,13 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Ferramentas internas: fora de buscadores. Tudo roda no navegador, sem API.
+[[headers]]
+  for = "/interno/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
 [[headers]]
   for = "/api/*"
   [headers.values]
