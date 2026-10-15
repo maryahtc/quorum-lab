@@ -9,7 +9,7 @@ import { StepRevisao } from "./steps/StepRevisao";
 import { StepServico } from "./steps/StepServico";
 import type { Patch } from "./steps/types";
 import { SubmitError, submitRequest, type Stage, type SubmitSession } from "./submitClient";
-import { Turnstile, turnstileEnabled, type TurnstileHandle } from "./Turnstile";
+import { Turnstile, type TurnstileHandle } from "./Turnstile";
 
 type Phase = { kind: "form" } | { kind: "sending"; stage: Stage; progress: number } | { kind: "error"; message: string } | { kind: "done"; code: string; email: string; confirmacao: boolean };
 
@@ -19,7 +19,6 @@ export default function SolicitarPage() {
   const [reached, setReached] = useState(0);
   const [errors, setErrors] = useState<Errors>({});
   const [phase, setPhase] = useState<Phase>({ kind: "form" });
-  const [token, setToken] = useState<string>();
   const startedAt = useRef(Date.now());
   const session = useRef<SubmitSession>({ uploaded: new Set() });
   const turnstile = useRef<TurnstileHandle>(null);
@@ -89,15 +88,11 @@ export default function SolicitarPage() {
         return;
       }
     }
-    if (turnstileEnabled && !token && !session.current.info) {
-      setErrors({ aceiteTermos: "Aguarde a verificação de segurança e tente novamente." });
-      return;
-    }
     setPhase({ kind: "sending", stage: "preparando", progress: 0 });
     try {
       const r = await submitRequest(state, session.current, {
         startedAt: startedAt.current,
-        turnstileToken: token,
+        getTurnstileToken: async () => turnstile.current?.getToken(),
         onStage: (stage) => setPhase((p) => ({ kind: "sending", stage, progress: p.kind === "sending" ? p.progress : 0 })),
         onProgress: (progress) => setPhase((p) => (p.kind === "sending" ? { ...p, progress } : p)),
       });
@@ -105,8 +100,6 @@ export default function SolicitarPage() {
       setPhase({ kind: "done", code: r.code, email: state.clinica.email, confirmacao: r.confirmacaoEnviada });
     } catch (e) {
       setPhase({ kind: "error", message: e instanceof SubmitError ? e.message : "Não foi possível concluir o envio. Tente novamente." });
-    } finally {
-      turnstile.current?.reset();
     }
   }
 
@@ -120,10 +113,23 @@ export default function SolicitarPage() {
     setPhase({ kind: "form" });
   }
 
-  if (phase.kind === "done") return <Done {...phase} onNew={restart} headingRef={heading} />;
-  if (phase.kind === "sending" || phase.kind === "error") {
-    return <Sending phase={phase} onRetry={send} onBack={() => setPhase({ kind: "form" })} headingRef={heading} />;
-  }
+  // O Turnstile fica sempre montado, na mesma posição da árvore, durante o
+  // formulário e as telas de envio/erro: assim "Tentar novamente" consegue
+  // gerar um token novo sem recriar o widget no meio do envio.
+  return (
+    <>
+      {phase.kind === "done" ? (
+        <Done {...phase} onNew={restart} headingRef={heading} />
+      ) : phase.kind === "sending" || phase.kind === "error" ? (
+        <Sending phase={phase} onRetry={send} onBack={() => setPhase({ kind: "form" })} headingRef={heading} />
+      ) : (
+        renderForm()
+      )}
+      <Turnstile ref={turnstile} />
+    </>
+  );
+
+  function renderForm() {
 
   const current = STEPS[step];
   const props = { state, patch, errors };
@@ -200,7 +206,6 @@ export default function SolicitarPage() {
               setState((s) => ({ ...s, aceiteTermos: v }));
               setErrors((e) => (e.aceiteTermos ? {} : e));
             }}
-            footer={<Turnstile ref={turnstile} onToken={setToken} />}
           />
         )}
 
@@ -211,6 +216,7 @@ export default function SolicitarPage() {
       </form>
     </>
   );
+  }
 }
 
 const STAGES: { id: Stage; label: string }[] = [

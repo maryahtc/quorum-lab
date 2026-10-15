@@ -28,7 +28,7 @@ function Sec({ title, onEdit, children }: { title: string; onEdit: () => void; c
   );
 }
 
-export function StepRevisao({ state, errors, goTo, onConsent, footer }: StepProps & { goTo: (i: number) => void; onConsent: (v: boolean) => void; footer: ReactNode }) {
+export function StepRevisao({ state, errors, goTo, onConsent }: StepProps & { goTo: (i: number) => void; onConsent: (v: boolean) => void }) {
   if (!state.servico.tipo) return null;
   const def = SERVICES[state.servico.tipo];
   const c = state.clinica;
@@ -120,7 +120,6 @@ export function StepRevisao({ state, errors, goTo, onConsent, footer }: StepProp
         </span>
       </label>
       {errors.aceiteTermos && <span className="error" role="alert">{errors.aceiteTermos}</span>}
-      {footer}
     </>
   );
 }

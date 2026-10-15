@@ -53,14 +53,21 @@ function put(url: string, file: File, contentType: string, onProgress: (loaded: 
 export async function submitRequest(
   state: FormState,
   session: SubmitSession,
-  ctx: { startedAt: number; turnstileToken?: string; onStage: (s: Stage) => void; onProgress: (ratio: number) => void },
+  ctx: { startedAt: number; getTurnstileToken: () => Promise<string | undefined>; onStage: (s: Stage) => void; onProgress: (ratio: number) => void },
 ): Promise<{ code: string; confirmacaoEnviada: boolean }> {
   const files = Object.entries(state.arquivos) as [DocSlot, { file: File; previewUrl?: string }][];
 
   if (!session.info) {
     ctx.onStage("preparando");
+    // Token novo a cada pedido de upload: tokens do Turnstile são de uso único.
+    let turnstileToken: string | undefined;
+    try {
+      turnstileToken = await ctx.getTurnstileToken();
+    } catch (e) {
+      throw new SubmitError(e instanceof Error ? e.message : "Falha na verificação de segurança. Tente novamente.");
+    }
     session.info = await postJson<UploadInfo>("/api/upload-urls", {
-      turnstileToken: ctx.turnstileToken,
+      turnstileToken,
       website: state.website,
       startedAt: ctx.startedAt,
       servico: state.servico.tipo,
