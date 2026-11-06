@@ -11,8 +11,9 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { SiteFrame } from "./components/SiteFrame";
 
-// Cada rota é um módulo independente. Quando o site institucional existir,
-// basta trocar o elemento de "/" — o formulário em /solicitar não muda.
+// Cada rota é um módulo independente: o site institucional ("/") e o
+// formulário (/solicitar) não dependem um do outro.
+const HomePage = lazy(() => import("./features/site/HomePage"));
 const SolicitarPage = lazy(() => import("./features/solicitar/SolicitarPage"));
 const TermosPage = lazy(() => import("./pages/TermosPage"));
 const PrivacidadePage = lazy(() => import("./pages/PrivacidadePage"));
@@ -38,7 +39,7 @@ createRoot(document.getElementById("root")!).render(
             </SiteFrame>
           }
         >
-          <Route path="/" element={<Navigate to="/solicitar" replace />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/solicitar" element={<SolicitarPage />} />
           <Route path="/termos" element={<TermosPage />} />
           <Route path="/privacidade" element={<PrivacidadePage />} />

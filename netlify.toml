@@ -9,14 +9,6 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# "/" → formulário (temporário). Para publicar o site institucional em "/",
-# remova este redirect e troque a rota "/" em src/main.tsx. /solicitar não muda.
-[[redirects]]
-  from = "/"
-  to = "/solicitar"
-  status = 302
-  force = true
-
 # SPA: as rotas do front-end são resolvidas pelo index.html.
 [[redirects]]
   from = "/*"

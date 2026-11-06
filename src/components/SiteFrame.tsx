@@ -6,7 +6,7 @@ export function SiteFrame({ children }: { children: ReactNode }) {
   return (
     <div className="site">
       <header className="site-header">
-        <Link to="/solicitar" aria-label="Quorum Lab — início">
+        <Link to="/" aria-label="Quorum Lab — início">
           <BrandMark />
         </Link>
       </header>

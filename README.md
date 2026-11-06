@@ -10,7 +10,7 @@ Ela faz quatro coisas: recebe o formulário, coleta a documentação, gera um PD
 | `/solicitar` | Formulário em 7 etapas (módulo independente em `src/features/solicitar`) |
 | `/termos` | Termos de Prestação de Serviço (**rascunho**) |
 | `/privacidade` | Política de Privacidade (**rascunho**) |
-| `/` | Redireciona para `/solicitar` (temporário, veja *Site institucional*) |
+| `/` | Site institucional (módulo em `src/features/site`, veja *Site institucional*) |
 | `/interno/entrega` | Ferramenta interna: PDF técnico de entrega do planejamento (veja abaixo) |
 
 ---
@@ -158,13 +158,11 @@ A interface e o PDF seguem o **Guia de Marca Quorum Lab** (`brand/original/Guia_
 - **PDF:** capa preta com o Q em destaque; páginas internas brancas com grid, seções numeradas e filetes dourados.
 - **Fontes:** distribuídas via `@fontsource` (licença OFL). Se houver licença da Garamond Premier Pro (Adobe Fonts), basta carregá-la: ela já é a primeira opção de `--font-title`.
 
-## Site institucional no futuro
+## Site institucional
 
-`/solicitar` é um módulo independente. Para publicar a landing page em `/`:
-1. Remova o redirect de `/` em `netlify.toml`.
-2. Troque o elemento da rota `/` em `src/main.tsx` pela nova página.
-
-O formulário não precisa de nenhuma alteração.
+A página em `/` fica em `src/features/site/` (`HomePage.tsx` e `site.css`) e é independente do formulário.
+Serviços, valores e documentação exigida são lidos de `src/shared/config.ts`: mudou lá, muda no site e no formulário.
+Os textos de abordagem e processo ficam no topo de `HomePage.tsx`.
 
 ## Ferramenta interna · Entrega do planejamento (`/interno/entrega`)
 
