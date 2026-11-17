@@ -11,6 +11,8 @@ import { verifyTurnstile } from "./_lib/turnstile";
  * 1ª etapa do envio: valida os metadados dos arquivos e devolve URLs
  * assinadas (15 min) para upload direto ao armazenamento privado.
  * Os arquivos nunca passam pela função (limite de 6 MB do Netlify).
+ * Também é chamada sem arquivos (documentação no Smilecloud): nesse caso só
+ * emite o código e o ticket assinado da solicitação.
  */
 
 const MIN_FILL_SECONDS = 20;
@@ -21,6 +23,8 @@ const bodySchema = z.object({
   website: z.string().optional(), // honeypot: deve chegar vazio
   startedAt: z.number(),
   servico: z.enum(["smile", "smile_enceramento", "smile_enceramento_perioguide"]),
+  /** "smilecloud": documentação compartilhada no Smilecloud; arquivos ficam opcionais. */
+  documentacao: z.enum(["upload", "smilecloud"]).default("upload"),
   files: z
     .array(
       z.object({
@@ -30,7 +34,6 @@ const bodySchema = z.object({
         type: z.string().max(100),
       }),
     )
-    .min(1)
     .max(4),
 });
 
@@ -63,7 +66,7 @@ export default async (req: Request, context: Context) => {
       if (f.type && !accepted.includes(f.type.toLowerCase())) errors[f.slot] = "Tipo de arquivo não aceito";
     }
     for (const [slot, rule] of Object.entries(service.documentos)) {
-      if (rule === "obrigatorio" && !seen.has(slot as DocSlot)) errors[slot] = "Documento obrigatório";
+      if (body.documentacao === "upload" && rule === "obrigatorio" && !seen.has(slot as DocSlot)) errors[slot] = "Documento obrigatório";
     }
     if (Object.keys(errors).length) throw new HttpError(422, "Documentação inválida", errors);
 

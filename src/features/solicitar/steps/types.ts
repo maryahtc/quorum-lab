@@ -1,6 +1,6 @@
 import type { Errors, FormState } from "../state";
 
-export type Patch = <K extends "clinica" | "paciente" | "servico" | "clinico" | "comunicacao" | "arquivos">(
+export type Patch = <K extends "clinica" | "paciente" | "servico" | "clinico" | "comunicacao" | "documentacao" | "arquivos">(
   section: K,
   value: Partial<FormState[K]>,
 ) => void;

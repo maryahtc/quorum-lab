@@ -1,6 +1,6 @@
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, rgb, setCharacterSpacing, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
-import { DOC_SLOTS, DOC_SLOT_ORDER, LOWER_TEETH, SERVICES, UPPER_TEETH } from "../../../src/shared/config";
+import { DOC_SLOTS, DOC_SLOT_ORDER, LOWER_TEETH, SERVICES, SMILECLOUD_EMAIL, UPPER_TEETH } from "../../../src/shared/config";
 import { LABELS, elementos, enderecoCompleto, formatBytes, formatTeeth } from "../../../src/shared/format";
 import { brl, type Estimate } from "../../../src/shared/pricing";
 import type { Solicitacao } from "../../../src/shared/schema";
@@ -319,13 +319,16 @@ function drawBody(w: Writer, input: PdfInput, thumb?: PDFImage) {
   field(w, "Observações clínicas", s.clinico.informacoes);
 
   section(w, 6, "Documentação recebida");
+  const smile = s.documentacao.origem === "smilecloud";
+  field(w, "Forma de envio", smile ? `Smilecloud · convite do caso para ${SMILECLOUD_EMAIL}` : "Arquivos enviados pelo formulário");
+  if (smile && s.documentacao.smilecloudLink) field(w, "Link do caso", s.documentacao.smilecloudLink);
   for (const slot of DOC_SLOT_ORDER) {
     const rule = service.documentos[slot];
     if (!rule) continue;
     const d = input.files.find((x) => x.slot === slot);
     const status = d
       ? `Recebido · ${formatBytes(d.size)}${d.mode === "anexo" ? " · anexado ao e-mail" : d.mode === "link" ? " · link temporário no e-mail" : ""}`
-      : rule === "opcional" ? "Não enviado (opcional)" : "—";
+      : smile ? "No Smilecloud" : rule === "opcional" ? "Não enviado (opcional)" : "—";
     field(w, DOC_SLOTS[slot].titulo, status);
   }
   if (thumb) {

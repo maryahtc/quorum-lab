@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { AVISO_ENVIO, DOC_SLOTS, DOC_SLOT_ORDER, SERVICES } from "../../../shared/config";
+import { AVISO_ENVIO, DOC_SLOTS, DOC_SLOT_ORDER, SERVICES, SMILECLOUD_EMAIL } from "../../../shared/config";
 import { LABELS, elementos, enderecoCompleto, formatTeeth } from "../../../shared/format";
 import { brl, estimate } from "../../../shared/pricing";
 import type { Solicitacao } from "../../../shared/schema";
@@ -88,6 +88,12 @@ export function StepRevisao({ state, errors, goTo, onConsent }: StepProps & { go
         </Sec>
 
         <Sec title="Documentação" onEdit={() => goTo(4)}>
+          {state.documentacao.origem === "smilecloud" && (
+            <>
+              <Row label="Envio">Smilecloud · convite para {SMILECLOUD_EMAIL}</Row>
+              {state.documentacao.smilecloudLink && <Row label="Link do caso">{state.documentacao.smilecloudLink}</Row>}
+            </>
+          )}
           <ul className="check-list">
             {DOC_SLOT_ORDER.map((slot) => {
               const rule = def.documentos[slot];
@@ -95,7 +101,9 @@ export function StepRevisao({ state, errors, goTo, onConsent }: StepProps & { go
               return (
                 <li key={slot}>
                   <span>{DOC_SLOTS[slot].titulo}{rule === "opcional" ? " (opcional)" : ""}</span>
-                  <span className={`st ${has ? "" : "off"}`}>{has ? "✓" : "—"}</span>
+                  <span className={`st ${has ? "" : "off"}`}>
+                    {has ? "✓" : rule && state.documentacao.origem === "smilecloud" ? "Smilecloud" : "—"}
+                  </span>
                 </li>
               );
             })}

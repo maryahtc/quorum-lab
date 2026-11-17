@@ -48,6 +48,8 @@ Tudo fica em **`src/shared/config.ts`**, usado pelo navegador e pelo servidor:
 - **Formatos e tamanho máximo por arquivo:** foto 25 MB, STL 150 MB, tomografia 1 GB.
 - **Textos fixos:** aviso de envio e nota do PerioGuide.
 
+Documentação pelo **Smilecloud**: na etapa 05 o dentista escolhe entre enviar os arquivos pelo formulário ou indicar que o caso já está no Smilecloud. Nesse caso, ele convida o Quorum Lab para o caso usando o e-mail de `SMILECLOUD_EMAIL` (em `src/shared/config.ts`), confirma o envio do convite e pode informar o link do caso. Os arquivos passam a ser opcionais, e o e-mail e o PDF indicam "via Smilecloud".
+
 Regras do odontograma:
 - Todos os serviços pedem **dentes do Smile Design**.
 - Serviços com enceramento pedem também **dentes que serão encerados**. Só esses dentes são cobrados (R$ 80 por elemento).

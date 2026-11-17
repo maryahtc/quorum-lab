@@ -1,4 +1,4 @@
-import { DOC_SLOTS, DOC_SLOT_ORDER, SERVICES } from "../../../src/shared/config";
+import { DOC_SLOTS, DOC_SLOT_ORDER, SERVICES, SMILECLOUD_EMAIL } from "../../../src/shared/config";
 import { elementos, formatBytes, formatTeeth } from "../../../src/shared/format";
 import { brl, type Estimate } from "../../../src/shared/pricing";
 import type { Solicitacao } from "../../../src/shared/schema";
@@ -99,6 +99,10 @@ export async function sendQuorumEmail(
     return { slot, titulo: DOC_SLOTS[slot].titulo, d };
   });
   const links = p.deliveries.filter((d) => d.mode === "link");
+  const smile = s.documentacao.origem === "smilecloud";
+  const smileLink = s.documentacao.smilecloudLink;
+  const smileLinkSafe = /^https:\/\/[^\s"<>]+$/i.test(smileLink) ? smileLink : "";
+  const faltante = smile ? "no Smilecloud" : "—";
   const validade = p.linkExpiresAt.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" });
 
   const subject = `NOVA SOLICITAÇÃO QUORUM | ${s.clinica.nomeFantasia} | ${service.nome}`;
@@ -126,7 +130,8 @@ export async function sendQuorumEmail(
     total,
     "",
     "Documentação:",
-    ...docs.map(({ titulo, d }) => `${titulo} ${d ? (d.mode === "anexo" ? "✓ (anexo)" : "✓ (link)") : "—"}`),
+    ...(smile ? [`Via Smilecloud — convite do caso para ${SMILECLOUD_EMAIL}`, ...(smileLink ? [`Link do caso: ${smileLink}`] : [])] : []),
+    ...docs.map(({ titulo, d }) => `${titulo} ${d ? (d.mode === "anexo" ? "✓ (anexo)" : "✓ (link)") : faltante}`),
     ...(links.length
       ? ["", `Arquivos por link (válidos até ${validade}; excluídos automaticamente após o prazo):`, ...links.map((l) => `${DOC_SLOTS[l.slot].titulo} (${formatBytes(l.size)}): ${l.url}`)]
       : []),
@@ -136,7 +141,7 @@ export async function sendQuorumEmail(
 
   const docsHtml = docs
     .map(({ titulo, d }) => {
-      const status = !d ? "—" : d.mode === "anexo" ? `✓ <span style="color:${MUTED};">anexo · ${formatBytes(d.size)}</span>` : `✓ <span style="color:${MUTED};">link · ${formatBytes(d.size)}</span>`;
+      const status = !d ? faltante : d.mode === "anexo" ? `✓ <span style="color:${MUTED};">anexo · ${formatBytes(d.size)}</span>` : `✓ <span style="color:${MUTED};">link · ${formatBytes(d.size)}</span>`;
       return row(titulo, status);
     })
     .join("");
@@ -158,7 +163,14 @@ ${h("Serviço")}${row("Tipo", esc(service.nome))}${row(`Smile Design · ${elemen
     }
 ${h("Valor estimado")}${p.estimate.linhas.map((l) => row(l.rotulo, `${l.detalhe && !l.aPartirDe ? esc(l.detalhe) + " = " : l.aPartirDe ? "a partir de " : ""}${brl(l.valor)}`)).join("")}
 <tr><td style="padding:8px 0;font-family:Georgia,serif;font-size:22px;color:${GOLD};">${esc(total)}</td></tr>
-${h("Documentação")}${docsHtml}${linksHtml}
+${h("Documentação")}${
+      smile
+        ? row("Envio", `Smilecloud · convite do caso para ${esc(SMILECLOUD_EMAIL)}`) +
+          (smileLink
+            ? row("Link do caso", smileLinkSafe ? `<a href="${esc(smileLinkSafe)}" style="color:${GOLD};">${esc(smileLink)}</a>` : esc(smileLink))
+            : "")
+        : ""
+    }${docsHtml}${linksHtml}
 <tr><td style="padding-top:28px;font-family:Helvetica,Arial,sans-serif;font-size:13px;color:${MUTED};">PDF completo da solicitação em anexo.</td></tr>`,
     `${s.clinica.nomeFantasia} · ${service.nome}`,
   );

@@ -67,13 +67,14 @@ const ctx = { ip: "127.0.0.1" } as never;
 const post = (path: string, body: unknown) =>
   new Request(`https://quorum.test${path}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
 
-async function uploadAndSubmit(files: Record<string, Uint8Array>, name: Record<string, string>) {
+async function uploadAndSubmit(files: Record<string, Uint8Array>, name: Record<string, string>, solicitacao: typeof solicitacaoExemplo = solicitacaoExemplo) {
   const { default: uploadUrls } = await import("../netlify/functions/upload-urls");
   const { default: submit } = await import("../netlify/functions/submit");
   const res = await uploadUrls(
     post("/api/upload-urls", {
       startedAt: Date.now() - 60_000,
-      servico: solicitacaoExemplo.servico.tipo,
+      servico: solicitacao.servico.tipo,
+      documentacao: solicitacao.documentacao.origem,
       files: Object.entries(files).map(([slot, b]) => ({ slot, name: name[slot], size: b.length, type: "" })),
     }),
     ctx,
@@ -87,7 +88,7 @@ async function uploadAndSubmit(files: Record<string, Uint8Array>, name: Record<s
     expect(url.searchParams.get("X-Amz-Expires")).toBe("900");
     stored.set(decodeURIComponent(url.pathname.replace("/bucket/", "")), files[u.slot]);
   }
-  const out = await submit(post("/api/submit", { ticket: data.ticket, solicitacao: solicitacaoExemplo }), ctx);
+  const out = await submit(post("/api/submit", { ticket: data.ticket, solicitacao }), ctx);
   return { status: out.status, body: await out.json(), code: data.code as string };
 }
 
@@ -126,6 +127,29 @@ describe("Functions", () => {
     delete process.env.FILE_RETENTION_DAYS;
     expect(r.status).toBe(200);
     expect(emails[0].text).toMatch(/X-Amz-Expires=864(&|$|\s)/);
+  });
+
+  it("aceita documentação no Smilecloud sem arquivos e informa no e-mail e no PDF", async () => {
+    const smile = {
+      ...solicitacaoExemplo,
+      documentacao: { origem: "smilecloud" as const, smilecloudConvite: true, smilecloudLink: "https://smilecloud.com/caso/123" },
+    };
+    const r = await uploadAndSubmit({}, {}, smile);
+    expect(r.status, JSON.stringify(r.body)).toBe(200);
+    const [quorum] = emails;
+    expect(quorum.attachments!.map((a) => a.filename)).toEqual([`${r.code}_solicitacao.pdf`]);
+    expect(quorum.text).toContain("Via Smilecloud — convite do caso para lab.quorum@gmail.com");
+    expect(quorum.text).toContain("Link do caso: https://smilecloud.com/caso/123");
+    expect(quorum.text).toMatch(/Tomografia \(DICOM\) no Smilecloud/);
+  });
+
+  it("sem Smilecloud, continua exigindo os arquivos obrigatórios", async () => {
+    const { default: uploadUrls } = await import("../netlify/functions/upload-urls");
+    const res = await uploadUrls(
+      post("/api/upload-urls", { startedAt: Date.now() - 60_000, servico: "smile", documentacao: "upload", files: [] }),
+      ctx,
+    );
+    expect(res.status).toBe(422);
   });
 
   it("rejeita arquivo cujo conteúdo não corresponde à extensão", async () => {

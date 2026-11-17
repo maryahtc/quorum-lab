@@ -398,3 +398,7 @@ button { font: inherit; color: inherit; }
 .draft-banner { margin-top: 40px; border: 1px solid var(--gold); padding: 18px 22px; font-size: 13px; color: var(--ink); font-weight: 300; }
 .draft-banner strong { color: var(--gold); font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 6px; }
 .placeholder { color: var(--gold); }
+
+/* Smilecloud */
+.smile-email { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px 24px; margin-top: 24px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.smile-email span { font-size: 17px; letter-spacing: 0.04em; color: var(--gold); overflow-wrap: anywhere; }

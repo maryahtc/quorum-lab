@@ -30,6 +30,7 @@ export interface FormState {
     periodo: "" | "manha" | "tarde" | "indiferente";
     entrega: "" | "whatsapp" | "email";
   };
+  documentacao: { origem: "" | "upload" | "smilecloud"; smilecloudConvite: boolean; smilecloudLink: string };
   arquivos: Partial<Record<DocSlot, SelectedFile>>;
   aceiteTermos: boolean;
   /** Honeypot anti-spam (campo invisível). */
@@ -46,6 +47,7 @@ export const initialState = (): FormState => ({
   servico: { tipo: "", dentesSmile: [], dentesEnceramento: [] },
   clinico: { possuiResina: "", dentesResina: [], intencao: "", alteracaoCor: "", informacoes: "" },
   comunicacao: { apresentacao: "", periodo: "", entrega: "" },
+  documentacao: { origem: "", smilecloudConvite: false, smilecloudLink: "" },
   arquivos: {},
   aceiteTermos: false,
   website: "",
@@ -104,6 +106,11 @@ export function validateStep(step: number, s: FormState): Errors {
     case 4: {
       const e: Errors = {};
       if (!s.servico.tipo) return e;
+      if (!s.documentacao.origem) return { "documentacao.origem": "Selecione como vai enviar a documentação" };
+      if (s.documentacao.origem === "smilecloud") {
+        if (!s.documentacao.smilecloudConvite) e["documentacao.smilecloudConvite"] = "Confirme o envio do convite no Smilecloud";
+        return e;
+      }
       for (const [slot, rule] of Object.entries(SERVICES[s.servico.tipo].documentos)) {
         if (rule === "obrigatorio" && !s.arquivos[slot as DocSlot]) e[`arquivos.${slot}`] = "Documento obrigatório";
       }
@@ -139,6 +146,7 @@ export function toPayload(s: FormState) {
       ...s.clinico,
       dentesResina: s.clinico.possuiResina === "sim" ? s.clinico.dentesResina.filter((t) => planned.has(t)) : [],
     },
+    documentacao: s.documentacao,
     comunicacao: { ...s.comunicacao, periodo: s.comunicacao.apresentacao === "pdf" ? "" : s.comunicacao.periodo },
     aceiteTermos: s.aceiteTermos,
   };

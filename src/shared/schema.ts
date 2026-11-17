@@ -69,6 +69,13 @@ export const clinicoSchema = z.object({
   informacoes: z.string().trim().max(4000).default(""),
 });
 
+export const documentacaoSchema = z.object({
+  /** "upload": arquivos pelo formulário; "smilecloud": caso compartilhado no Smilecloud. */
+  origem: z.enum(["upload", "smilecloud"], { message: "Selecione como vai enviar a documentação" }),
+  smilecloudConvite: z.boolean().default(false),
+  smilecloudLink: z.string().trim().max(500).default(""),
+});
+
 export const comunicacaoSchema = z.object({
   apresentacao: z.enum(["pdf", "conversa", "ambos"], { message: "Selecione uma opção" }),
   periodo: z.enum(["manha", "tarde", "indiferente", ""]).default(""),
@@ -81,6 +88,7 @@ export const solicitacaoSchema = z
     paciente: pacienteSchema,
     servico: servicoSchema,
     clinico: clinicoSchema,
+    documentacao: documentacaoSchema,
     comunicacao: comunicacaoSchema,
     aceiteTermos: z.literal(true, { message: "É necessário aceitar os termos" }),
   })
@@ -96,6 +104,9 @@ export const solicitacaoSchema = z
       } else if (!s.clinico.dentesResina.every((t) => planned.has(t))) {
         ctx.addIssue({ code: "custom", path: ["clinico", "dentesResina"], message: "Elemento fora do planejamento" });
       }
+    }
+    if (s.documentacao.origem === "smilecloud" && !s.documentacao.smilecloudConvite) {
+      ctx.addIssue({ code: "custom", path: ["documentacao", "smilecloudConvite"], message: "Confirme o envio do convite no Smilecloud" });
     }
     if (s.comunicacao.apresentacao !== "pdf" && s.comunicacao.periodo === "") {
       ctx.addIssue({ code: "custom", path: ["comunicacao", "periodo"], message: "Selecione o melhor período" });
@@ -121,6 +132,10 @@ export function normalizeSolicitacao(s: Solicitacao): Solicitacao {
       ...s.clinico,
       dentesResina: s.clinico.possuiResina === "sim" ? s.clinico.dentesResina.filter((t) => planned.has(t)) : [],
     },
+    documentacao:
+      s.documentacao.origem === "smilecloud"
+        ? s.documentacao
+        : { origem: "upload", smilecloudConvite: false, smilecloudLink: "" },
     comunicacao: {
       ...s.comunicacao,
       periodo: s.comunicacao.apresentacao === "pdf" ? "" : s.comunicacao.periodo,

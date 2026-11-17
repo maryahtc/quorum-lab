@@ -41,8 +41,10 @@ export default async (req: Request, _context: Context) => {
 
     // Documentos do ticket precisam corresponder ao serviço escolhido.
     const slots = new Set(ticket.files.map((f) => f.slot));
-    for (const [slot, rule] of Object.entries(service.documentos)) {
-      if (rule === "obrigatorio" && !slots.has(slot as never)) throw new HttpError(422, "Documentação incompleta");
+    if (solicitacao.documentacao.origem === "upload") {
+      for (const [slot, rule] of Object.entries(service.documentos)) {
+        if (rule === "obrigatorio" && !slots.has(slot as never)) throw new HttpError(422, "Documentação incompleta");
+      }
     }
     if (ticket.files.some((f) => !service.documentos[f.slot])) throw new HttpError(422, "Documentação incompatível com o serviço");
 

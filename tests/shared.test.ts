@@ -50,6 +50,11 @@ describe("validações", () => {
     const s = { ...solicitacaoExemplo, servico: { ...solicitacaoExemplo.servico, dentesEnceramento: [] } };
     expect(solicitacaoSchema.safeParse(s).success).toBe(false);
   });
+  it("Smilecloud exige a confirmação do convite", () => {
+    const base = { ...solicitacaoExemplo, documentacao: { origem: "smilecloud" as const, smilecloudConvite: false, smilecloudLink: "" } };
+    expect(solicitacaoSchema.safeParse(base).success).toBe(false);
+    expect(solicitacaoSchema.safeParse({ ...base, documentacao: { ...base.documentacao, smilecloudConvite: true } }).success).toBe(true);
+  });
   it("rejeita resina em dente fora do planejamento", () => {
     const s = { ...solicitacaoExemplo, clinico: { ...solicitacaoExemplo.clinico, dentesResina: [36] } };
     expect(solicitacaoSchema.safeParse(s).success).toBe(false);

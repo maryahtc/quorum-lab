@@ -34,6 +34,7 @@ export const solicitacaoExemplo: Solicitacao = {
     alteracaoCor: "indefinido",
     informacoes: "Linha do sorriso alta. Avaliar zênites dos centrais antes do enceramento.",
   },
+  documentacao: { origem: "upload", smilecloudConvite: false, smilecloudLink: "" },
   comunicacao: { apresentacao: "ambos", periodo: "tarde", entrega: "whatsapp" },
   aceiteTermos: true,
 };

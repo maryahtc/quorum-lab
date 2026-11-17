@@ -129,6 +129,14 @@ export const DOC_SLOTS: Record<DocSlot, DocSlotDefinition> = {
   },
 };
 
+/**
+ * Smilecloud: o dentista pode, em vez de enviar os arquivos pelo formulário,
+ * convidar o Quorum Lab para o caso no Smilecloud usando este e-mail.
+ */
+export const SMILECLOUD_EMAIL = "lab.quorum@gmail.com";
+
+export type DocOrigem = "upload" | "smilecloud";
+
 export const DOC_SLOT_ORDER: DocSlot[] = ["foto", "stl_superior", "stl_inferior", "tomografia"];
 
 /** Content-Type canônico gravado no armazenamento, por extensão. */

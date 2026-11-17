@@ -71,6 +71,7 @@ export async function submitRequest(
       website: state.website,
       startedAt: ctx.startedAt,
       servico: state.servico.tipo,
+      documentacao: state.documentacao.origem,
       files: files.map(([slot, f]) => ({ slot, name: f.file.name, size: f.file.size, type: f.file.type })),
     });
     session.uploaded = new Set();
@@ -79,7 +80,7 @@ export async function submitRequest(
   ctx.onStage("enviando");
   const total = files.reduce((a, [, f]) => a + f.file.size, 0);
   let done = files.filter(([slot]) => session.uploaded.has(slot)).reduce((a, [, f]) => a + f.file.size, 0);
-  ctx.onProgress(done / total);
+  ctx.onProgress(total ? done / total : 1);
   for (const [slot, f] of files) {
     if (session.uploaded.has(slot)) continue;
     const target = session.info.uploads.find((u) => u.slot === slot);
